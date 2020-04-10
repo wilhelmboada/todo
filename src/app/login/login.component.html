@@ -1,4 +1,21 @@
-User Name : <input type="text" name="username" [(ngModel)]="username">
-Password  : <input type="password" name="password" [(ngModel)]="password">
-
-<button (click)=handleLogin()>Login</button>
+<h2>Login</h2>
+<form [formGroup]="loginForm" (ngSubmit)="handleLogin()">
+    <div class="form-group">
+        <label for="usuario">Usuario</label>
+        <input type="text" formControlName="usuario" class="form-control" />
+        <div *ngIf="submitted && loginForm.get('usuario').errors">
+            <div *ngIf="loginForm.get('usuario').errors">Usuario es requerido</div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" formControlName="password" class="form-control" />
+        <div *ngIf="submitted && loginForm.get('password').errors">
+            <div *ngIf="loginForm.get('password').errors">Password es requerido</div>
+        </div>
+    </div>
+    <div class="form-group">
+        <button class="btn btn-primary">Login</button>
+        <a routerLink="/registrar" class="btn btn-link">Registrar</a>
+    </div>
+</form>

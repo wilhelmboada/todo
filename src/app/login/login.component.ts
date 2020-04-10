@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AutenticacionService } from '../service/autenticacion.service';
 
 @Component({
   selector: 'app-login',
@@ -8,25 +10,36 @@ import { Router } from '@angular/router';
 })
 export class LoginComponent implements OnInit {
 
-  // Se le llama component property
-  username = 'wilhelmboada'
-  password = ''
-
-  // Para redireccionar a otra página necesito una instancia de Router
-  // Inyección de dependencia
-  // En este caso router es una dependecia de LoginComponent
-  constructor(private router: Router) { }
+  loginForm: FormGroup;
+  submitted = false;
+  
+  constructor(private router: Router, private formBuilder: FormBuilder, private service: AutenticacionService) { }
 
   ngOnInit() {
+    this.loginForm = this.formBuilder.group({
+      usuario: ['', Validators.required],
+      password: ['', Validators.required]
+    });
   }
 
-    // Se le component event
   handleLogin(){
-    if(this.username === 'wilhelmboada' && this.password === 'wilhelmboada')
-    // Redireccionar a welcome page
-    // navigate nos ayuda a enrutar una página específica
-    this.router.navigate(['welcome', this.username])
-    console.log('Username: ' + this.username)
+    this.submitted = true;
+    if (this.loginForm.invalid) {
+      return;
+    }
+    this.service.login(this.loginForm.get('usuario').value, this.loginForm.get('password').value)
+        .subscribe(
+          response => this.handleSuccessfulResponse(),
+          error => this.handleErrorResponse(error)
+        )
+    }
+
+  handleSuccessfulResponse() {
+    this.router.navigate(['bienvenido'])
   }
 
+  handleErrorResponse(error) {
+    alert('Usuario o clave invalida');
+    console.log('Error mensaje: ' + JSON.stringify(error.error));
+  }
 }
